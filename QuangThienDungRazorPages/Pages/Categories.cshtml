@@ -1,0 +1,42 @@
+@page
+@model QuangThienDungRazorPages.Pages.CategoriesModel
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<h1>Categories</h1>
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Parent Category</th>
+                    <th>Active</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var category in Model.Categories)
+                {
+                    <tr>
+                        <td>@category.CategoryID</td>
+                        <td>@category.CategoryName</td>
+                        <td>@category.CategoryDesciption</td>
+                        <td>@(category.ParentCategory?.CategoryName ?? "None")</td>
+                        <td>@(category.IsActive == true ? "Yes" : "No")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (!Model.Categories.Any())
+{
+    <div class="alert alert-info">
+        <p>No categories found. Make sure your database connection is working and the database contains data.</p>
+    </div>
+}

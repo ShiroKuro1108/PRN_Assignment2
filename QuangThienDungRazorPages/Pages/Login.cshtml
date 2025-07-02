@@ -1,0 +1,83 @@
+@page
+@model QuangThienDungRazorPages.Pages.LoginModel
+@{
+    ViewData["Title"] = "Login - FU News Management System";
+    Layout = "_LoginLayout";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+}
+
+<div class="login-container">
+    <!-- Floating particles for visual appeal -->
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+
+    <div class="login-card">
+        <div class="login-header">
+            <div class="mb-3">
+                <i class="fas fa-newspaper fa-3x text-primary mb-3"></i>
+            </div>
+            <h2>FU News Management System</h2>
+            <p>Please sign in to your account</p>
+        </div>
+
+        <form method="post" class="login-form">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            
+            <div class="form-group">
+                <label asp-for="Input.Email" class="form-label">
+                    <i class="fas fa-envelope me-2"></i>Email Address
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0">
+                        <i class="fas fa-envelope text-muted"></i>
+                    </span>
+                    <input asp-for="Input.Email" class="form-control border-start-0" placeholder="Enter your email" />
+                </div>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Input.Password" class="form-label">
+                    <i class="fas fa-lock me-2"></i>Password
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0">
+                        <i class="fas fa-lock text-muted"></i>
+                    </span>
+                    <input asp-for="Input.Password" class="form-control border-start-0" placeholder="Enter your password" />
+                </div>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <div class="form-check">
+                    <input asp-for="Input.RememberMe" class="form-check-input" />
+                    <label asp-for="Input.RememberMe" class="form-check-label">Remember me</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-login">Sign In</button>
+        </form>
+
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger mt-3">
+                @Model.ErrorMessage
+            </div>
+        }
+
+        <div class="login-footer">
+            <p class="text-muted">
+                <strong>Default Admin Account:</strong><br />
+                <strong>Email:</strong> admin@FUNewsManagementSystem.org<br />
+                <strong>Password:</strong> @@abc123@@ 
+            </p>
+        </div>
+    </div>
+</div>
+
+

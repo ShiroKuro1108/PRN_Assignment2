@@ -1,0 +1,148 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Dashboard - FU News Management System";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+}
+
+<div class="container-fluid">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header fade-in">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="mb-0">
+                    <i class="fas fa-newspaper me-3"></i>Welcome, @Model.UserName
+                </h1>
+                <p class="mb-0 mt-2">
+                    <i class="fas fa-user-tag me-2"></i>Role: @Model.UserRole
+                </p>
+            </div>
+            <div>
+                <a href="/Logout" class="btn btn-outline-light">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Role-based Navigation -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card slide-in-left">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-bolt me-2 text-primary"></i>Quick Actions
+                    </h5>
+                    <div class="row">
+                        @if (Model.UserRole == "Admin")
+                        {
+                            <div class="col-md-3">
+                                <a href="/Admin/Accounts" class="btn btn-primary mb-2">
+                                    <i class="fas fa-users me-2"></i>Manage Accounts
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="/Admin/Reports" class="btn btn-info mb-2">
+                                    <i class="fas fa-chart-bar me-2"></i>View Reports
+                                </a>
+                            </div>
+                        }
+                        @if (Model.UserRole == "Staff")
+                        {
+                            <div class="col-md-3">
+                                <a href="/Staff/Categories" class="btn btn-success mb-2">
+                                    <i class="fas fa-tags me-2"></i>Manage Categories
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="/Staff/News" class="btn btn-primary mb-2">
+                                    <i class="fas fa-newspaper me-2"></i>Manage News
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="/Staff/Profile" class="btn btn-secondary mb-2">
+                                    <i class="fas fa-user-cog me-2"></i>My Profile
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="/Staff/MyNews" class="btn btn-info mb-2">
+                                    <i class="fas fa-history me-2"></i>My News History
+                                </a>
+                            </div>
+                        }
+                        @if (Model.UserRole == "Lecturer")
+                        {
+                            <div class="col-md-3">
+                                <a href="/Lecturer/News" class="btn btn-info mb-2">
+                                    <i class="fas fa-eye me-2"></i>View Active News
+                                </a>
+                            </div>
+                            <div class="col-md-9">
+                                <p class="text-muted">
+                                    <i class="fas fa-info-circle me-2"></i>As a Lecturer, you can view all active news articles in the system.
+                                </p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active News Display -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card slide-in-right">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0">
+                        <i class="fas fa-newspaper me-2 text-primary"></i>Active News Articles
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.ActiveNews.Any())
+                    {
+                        <div class="row">
+                            @foreach (var news in Model.ActiveNews)
+                            {
+                                <div class="col-md-6 col-lg-4 mb-4">
+                                    <div class="card h-100 news-card">
+                                        <div class="card-body">
+                                            <h6 class="card-title">@news.NewsTitle</h6>
+                                            <p class="card-text">@news.Headline</p>
+                                            <small class="text-muted">
+                                                Category: @(news.Category?.CategoryName ?? "N/A")<br />
+                                                Created: @news.CreatedDate?.ToString("MMM dd, yyyy")<br />
+                                                By: @(news.CreatedBy?.AccountName ?? "N/A")
+                                            </small>
+                                        </div>
+                                        <div class="card-footer">
+                                            <small class="text-muted">
+                                                @if (news.NewsTags.Any())
+                                                {
+                                                    <span>Tags: </span>
+                                                    @foreach (var tag in news.NewsTags)
+                                                    {
+                                                        <span class="badge badge-secondary me-1">@tag.Tag.TagName</span>
+                                                    }
+                                                }
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <p class="text-muted">No active news articles found.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

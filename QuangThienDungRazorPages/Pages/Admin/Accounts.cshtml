@@ -1,0 +1,170 @@
+@page
+@model QuangThienDungRazorPages.Pages.Admin.AccountsModel
+@{
+    ViewData["Title"] = "Account Management";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Account Management</h2>
+        <div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAccountModal">
+                <i class="fas fa-plus"></i> Create Account
+            </button>
+            <a href="/" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <form method="get">
+                <div class="input-group">
+                    <input type="text" name="searchTerm" value="@Model.SearchTerm" class="form-control" placeholder="Search accounts...">
+                    <button class="btn btn-outline-secondary" type="submit">Search</button>
+                    @if (!string.IsNullOrEmpty(Model.SearchTerm))
+                    {
+                        <a href="/Admin/Accounts" class="btn btn-outline-secondary">Clear</a>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Accounts Table -->
+    <div class="card">
+        <div class="card-body">
+            @if (Model.Accounts.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var account in Model.Accounts)
+                            {
+                                <tr>
+                                    <td>@account.AccountID</td>
+                                    <td>@account.AccountName</td>
+                                    <td>@account.AccountEmail</td>
+                                    <td>
+                                        <span class="badge @(account.AccountRole == 1 ? "bg-success" : account.AccountRole == 2 ? "bg-info" : "bg-warning")">
+                                            @(account.AccountRole == 1 ? "Staff" : account.AccountRole == 2 ? "Lecturer" : "Unknown")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="editAccount(@account.AccountID)">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteAccount(@account.AccountID, '@account.AccountName')">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4">
+                    <p class="text-muted">No accounts found.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Create Account Modal -->
+<div class="modal fade" id="createAccountModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="createAccountForm">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="createAccountName" class="form-label">Name *</label>
+                        <input type="text" class="form-control" id="createAccountName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createAccountEmail" class="form-label">Email *</label>
+                        <input type="email" class="form-control" id="createAccountEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createAccountPassword" class="form-label">Password *</label>
+                        <input type="password" class="form-control" id="createAccountPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createAccountRole" class="form-label">Role *</label>
+                        <select class="form-control" id="createAccountRole" required>
+                            <option value="">Select Role</option>
+                            <option value="1">Staff</option>
+                            <option value="2">Lecturer</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Account Modal -->
+<div class="modal fade" id="editAccountModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editAccountForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="editAccountId">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editAccountName" class="form-label">Name *</label>
+                        <input type="text" class="form-control" id="editAccountName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editAccountEmail" class="form-label">Email *</label>
+                        <input type="email" class="form-control" id="editAccountEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editAccountPassword" class="form-label">Password (leave blank to keep current)</label>
+                        <input type="password" class="form-control" id="editAccountPassword">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editAccountRole" class="form-label">Role *</label>
+                        <select class="form-control" id="editAccountRole" required>
+                            <option value="1">Staff</option>
+                            <option value="2">Lecturer</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/admin-accounts.js"></script>
+}

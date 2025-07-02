@@ -1,0 +1,201 @@
+@page
+@model QuangThienDungRazorPages.Pages.Staff.MyNewsModel
+@{
+    ViewData["Title"] = "My News History";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>My News History</h2>
+        <div>
+            <a href="/Staff/News" class="btn btn-primary">Create New News</a>
+            <a href="/" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Statistics Summary -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">@Model.TotalNews</h5>
+                    <p class="card-text">Total Articles</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-success">@Model.ActiveNews</h5>
+                    <p class="card-text">Active Articles</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-secondary">@Model.InactiveNews</h5>
+                    <p class="card-text">Inactive Articles</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-info">@Model.RecentNews</h5>
+                    <p class="card-text">This Month</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Options -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Filter Options</h5>
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label for="status" class="form-label">Status</label>
+                    <select class="form-control" id="status" name="status">
+                        <option value="">All Status</option>
+                        <option value="true" selected="@(Model.StatusFilter == "true")">Active</option>
+                        <option value="false" selected="@(Model.StatusFilter == "false")">Inactive</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="category" class="form-label">Category</label>
+                    <select class="form-control" id="category" name="category">
+                        <option value="">All Categories</option>
+                        @foreach (var category in Model.Categories)
+                        {
+                            <option value="@category.CategoryID" selected="@(Model.CategoryFilter == category.CategoryID.ToString())">
+                                @category.CategoryName
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="searchTerm" class="form-label">Search</label>
+                    <input type="text" class="form-control" id="searchTerm" name="searchTerm" 
+                           value="@Model.SearchTerm" placeholder="Search in title or content...">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">&nbsp;</label>
+                    <div>
+                        <button type="submit" class="btn btn-primary">Apply Filter</button>
+                        <a href="/Staff/MyNews" class="btn btn-outline-secondary">Clear</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- News Articles -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">My News Articles (Sorted by Created Date - Descending)</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.NewsArticles.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Status</th>
+                                <th>Created Date</th>
+                                <th>Modified Date</th>
+                                <th>Tags</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var news in Model.NewsArticles)
+                            {
+                                <tr>
+                                    <td>@news.NewsArticleID</td>
+                                    <td>
+                                        <strong>@news.NewsTitle</strong>
+                                        <br />
+                                        <small class="text-muted">@news.Headline</small>
+                                    </td>
+                                    <td>@(news.Category?.CategoryName ?? "N/A")</td>
+                                    <td>
+                                        <span class="badge @(news.NewsStatus == true ? "bg-success" : "bg-secondary")">
+                                            @(news.NewsStatus == true ? "Active" : "Inactive")
+                                        </span>
+                                    </td>
+                                    <td>@news.CreatedDate?.ToString("MMM dd, yyyy HH:mm")</td>
+                                    <td>
+                                        @if (news.ModifiedDate.HasValue && news.ModifiedDate != news.CreatedDate)
+                                        {
+                                            @news.ModifiedDate?.ToString("MMM dd, yyyy HH:mm")
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Not modified</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (news.NewsTags.Any())
+                                        {
+                                            @foreach (var tag in news.NewsTags)
+                                            {
+                                                <span class="badge bg-info me-1">@tag.Tag.TagName</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">No tags</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-outline-info" 
+                                                onclick="viewNews('@news.NewsArticleID')">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
+                                        <a href="/Staff/News" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4">
+                    <p class="text-muted">No news articles found matching your criteria.</p>
+                    <a href="/Staff/News" class="btn btn-primary">Create Your First News Article</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- View News Modal -->
+<div class="modal fade" id="viewNewsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewNewsTitle">News Article Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="viewNewsContent">
+                <!-- Content will be loaded dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/staff-mynews.js"></script>
+}
